@@ -14,11 +14,11 @@ class AuthController {
 
     async signIn(req, res){
         try{
-            const log = await AuthService.signIn(req.body)
+            const log = await AuthService.singIn(req.body)
             res.json(log)
         }catch(err){
             res.status(401).json({
-                message: 'Invalid password or email'
+                message: err.message
             })
         }
     }

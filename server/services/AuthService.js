@@ -15,11 +15,12 @@ const generateToken = (name, email) => {
 
 class AuthService {
     async signUp(data) {
-        const password = await bcrypt.genSalt(4)
+        const salt = await bcrypt.genSalt(4);
+        const hashedPassword = await bcrypt.hash(String(data.password), salt);
         const user = await UserModel.create({
             name: data.name,
             email: data.email,
-            password: password
+            password: hashedPassword
         })
         return {
             token: generateToken(user.name, user.email)
@@ -27,9 +28,10 @@ class AuthService {
     }
 
     async singIn(data) {
-        const user = await UserModel.where({email: data.email})
+        const user = await UserModel.findOne({email: data.email})
         if(user){
-            const comparePassword = await bcrypt.compare(data.password, user.password)
+            const comparePassword = await bcrypt.compare(String(data.password), user.password)
+            console.log(comparePassword)
             if(comparePassword){
                 return {
                     token: generateToken(user.name, user.email)
